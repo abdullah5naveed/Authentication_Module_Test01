@@ -1,0 +1,21 @@
+{% extends 'auth_mod/base.html' %}
+
+{% block content %}
+
+<h1>This is Login Page</h1>
+
+<br>
+<h3>{{error}}</h3>
+
+<form method="POST">
+    
+    {% csrf_token %}
+    {{loginform.as_p}}
+    <button type="submit">Login</button>
+
+</form>
+
+
+
+
+{% endblock %}

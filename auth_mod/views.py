@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 
 # Create your views here.
@@ -14,7 +14,7 @@ def home(request):
 def signupuser(request):
     if request.method == 'GET':
         signupData =  {'signupform':UserCreationForm}
-        return render(request, 'auth_mod/signup.html', signupData)
+        return render(request, 'auth_mod/signupuser.html', signupData)
     else:
         if request.POST['password1'] == request.POST['password2']:
             try:
@@ -25,15 +25,24 @@ def signupuser(request):
 
             except IntegrityError:
                 signupData =  {'signupform':UserCreationForm, 'error': "User Name Must be unique."}
-                return render(request, 'auth_mod/signup.html', signupData)
+                return render(request, 'auth_mod/signupuser.html', signupData)
         else:
             signupData =  {'signupform':UserCreationForm, 'error': "Password didn't match"}
-            return render(request, 'auth_mod/signup.html', signupData)
+            return render(request, 'auth_mod/signupuser.html', signupData)
     
 
 def loginuser(request):
-    return render(request, 'auth_mod/login.html')
-
+    if request.method == 'GET':
+        loginuserData = {'loginform':AuthenticationForm}
+        return render(request, 'auth_mod/loginuser.html', loginuserData)
+    else:
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user is None:
+            loginuserData = {'loginform':authenticate, 'error':"Username or password is wrong..."}
+            return render(request, 'auth_mod/loginuser.html', loginuserData)
+        else:
+            login(request, user)
+            return redirect('home')
 
 
 
